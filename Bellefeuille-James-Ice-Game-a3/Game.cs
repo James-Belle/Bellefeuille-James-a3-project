@@ -1,6 +1,7 @@
 ﻿// Include code libraries you need below (use the namespace).
 using Raylib_cs;
 using System;
+using System.Drawing;
 using System.Numerics;
 using System.Threading;
 
@@ -14,13 +15,10 @@ namespace Game10003
     {
         // Place your variables here:
         Vector2 mouseBrush = new Vector2(50, 10);
-        Debris deb = new Debris();
-        Vector2 lastMousePos = new Vector2(0,0);
-        int timer = 0;
-        bool colide = false;
-
-
-        Vector2 storedMousePos = new Vector2(0,0);
+        Debris deb = new Debris(); // will probably change into an array
+        Color colBrown = new Color(180, 100, 90);
+        Ice ice = new Ice();
+        Color colUiBack = new Color(50, 20, 100);
         /// <summary>
         ///     Setup runs once before the game loop begins.
         /// </summary>
@@ -35,51 +33,37 @@ namespace Game10003
         /// </summary>
         public void Update()
         {
-            Window.ClearBackground(Color.White);
-            Draw.Rectangle(0, 0, 200, 600);
+            Window.ClearBackground(Color.OffWhite);
+
+            //drawes ui
+            //Draw.FillColor = colUiBack;
+            //Draw.Rectangle(0, 0, 200, 600);
+
 
             Vector2 mousePosition = Input.GetMousePosition();
 
+            bool startGame = true;
 
-            //
-            // collision check here
-            colide = deb.DebrisCollide(lastMousePos, mousePosition, colide);
-            if (!colide)
+            if (startGame)
             {
-                storedMousePos = lastMousePos;
 
-            }
-            else
-            {
-                Draw.LineColor = Color.Red;
-                Draw.Capsule(lastMousePos, storedMousePos, 5); // this shows the trajectory of your mouse colliding with the debris
-                Draw.LineColor = Color.Black;
-                timer++;
+                ice.IceDraw();
+                if (mousePosition.X > 200)
+                { // this will draw a brush on the mouse
+                    Draw.FillColor = colBrown;
+                    Draw.Ellipse(mousePosition, mouseBrush);
+
+                    // this will check if the brush is touching the debris
+                    if (deb.DebrisCollide(mousePosition))
+                    {
+                        deb.MouseCollide(mousePosition.Y);
+                    }
+                }
+
+                deb.DebrisMove();
             }
 
-
-            //
-            //
-            if (timer > 20)
-            {
-                timer = 0;
-                Console.WriteLine(mousePosition - lastMousePos);
-                colide = false;
-            }
             
-            
-
-            if (mousePosition.X > 200)
-            {
-                Draw.Ellipse(mousePosition, mouseBrush);
-            }
-
-            deb.DebrisMove();
-
-            if (!colide)
-            {
-                lastMousePos = mousePosition;
-            }
             
         }
     }
