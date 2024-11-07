@@ -6,24 +6,36 @@ namespace Game10003
 {
 	public class Ice
 	{
-		Vector2 position;
-		float size;
-		Vector2 speed;
+		public Vector2 position;
+		
+		public float size;
+		public float iceSpeed;
 		int frame = 0;
 		public Ice()
 		{
 			// i love programming
-			position = new Vector2(20, 20);
+			position = new Vector2(100, 300);
 			size = 20;
-			speed = new Vector2(0, 0);
+			iceSpeed =(float) 0.01;
 			
 		}
-		public void IceDraw()
+		public float iceSlow(float totalSpeed)
+		{
+			totalSpeed += iceSpeed / size;
+			size -=(float) 0.001;
+
+
+			return (totalSpeed);
+		}
+		
+		public void IceDraw(float speedTest, Color iceBlue)
 		{
 			frame++;
-
 			float smallSize = size/8;
-            
+			Draw.FillColor = iceBlue;
+			Draw.LineColor = iceBlue;
+			Draw.Capsule(0, 300+smallSize*4, position.X+smallSize*2, position.Y+smallSize*4, smallSize*4);
+			Draw.LineColor = Color.Black;
             if (frame <= 10)
 			{
 				Draw.Square(position, size);
@@ -48,6 +60,7 @@ namespace Game10003
 			{
                 Draw.Square(position, size);
                 frame = 0;
+				Console.WriteLine(speedTest);
 			}
 		}
 	}
