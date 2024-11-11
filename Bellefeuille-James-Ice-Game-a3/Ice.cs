@@ -16,7 +16,7 @@ namespace Game10003
 			// i love programming
 			position = new Vector2(100, 300);
 			size = 20;
-			iceSpeed =(float) 0.01;
+			iceSpeed =(float) 0.01; // this system is unclear, fix nameing / how it works
 			
 		}
 		public float iceSlow(float totalSpeed)

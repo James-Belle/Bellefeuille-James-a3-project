@@ -22,7 +22,9 @@ namespace Game10003
         Debris[] obstacles = new Debris[20];
         Vector2 mousePosition = Vector2.Zero;
         Color colIceBlue = new Color(179, 240, 245);
-
+        BackGroundTile[] backGround = new BackGroundTile[150];
+        bool mainMenu = true;
+        bool startGame = false;
         float backgroundSpeed = -5;
 
 
@@ -36,7 +38,20 @@ namespace Game10003
             {
                 obstacles[i] = new Debris();
             }
+            for (int yPos = 0; yPos < 15; yPos++)
+            {
+                for (int xPos = 0; xPos < 10; xPos++)
+                {
+                    backGround[xPos + yPos * 10] = new BackGroundTile();
+                    int xOffset = 0;
+                    if (yPos %2 == 0)
+                    {
+                        xOffset = -70;
+                    }
+                    backGround[xPos + yPos * 10].position = new Vector2(xPos * 140+xOffset, yPos * 40);
 
+                }
+            }
 
         }
 
@@ -53,11 +68,41 @@ namespace Game10003
 
 
             mousePosition = Input.GetMousePosition();
+            if (mainMenu)
+            {
+                Draw.FillColor = Color.OffWhite;
+                
+                Draw.Rectangle(300, 200, 200, 150);
+                Text.Size = 25;
+                Text.Draw("Start The Game!", 300, 250);
+                if (Input.IsMouseButtonPressed(MouseInput.Left))
+                {
 
-            bool startGame = true;
+                    if (mousePosition.X > 350 && mousePosition.Y > 250 && mousePosition.X < 500 && mousePosition.Y < 350)
+                    {
+                        startGame = true;
+                        mainMenu = false;
+                    }
+
+                }
+            }
+
+            
+
 
             if (startGame)
             {
+                // background tileing
+
+
+                foreach (BackGroundTile tile in backGround)
+                {
+
+                    tile.DrawTile();
+                    tile.OffScreen();
+                    tile.Move(-backgroundSpeed);
+                }
+
 
                 ice.IceDraw(backgroundSpeed, colIceBlue);
                 //if (mousePosition.X > 100)
@@ -85,14 +130,16 @@ namespace Game10003
                 }
 
                 backgroundSpeed = ice.iceSlow(backgroundSpeed);
-                //backgroundSpeed -= ice.iceSpeed; // it speeds up right now, eventually it will slow down.
 
 
 
-
-
+                if (ice.size < 2 || backgroundSpeed > -1)
+                {
+                    Console.WriteLine("You Lose!!");
+                }
 
                 // background floor to be done
+
             }
 
         }
