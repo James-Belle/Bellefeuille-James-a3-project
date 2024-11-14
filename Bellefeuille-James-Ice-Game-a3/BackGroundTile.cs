@@ -8,9 +8,9 @@ namespace Game10003
 		public Vector2 position;
 		public Color colTileColour;
 		public BackGroundTile()
-		{
-			float Brightness = Random.Float(4, 6);
-			int red = (int)Math.Round(Random.Float(28, 31) * Brightness,0);
+		{ 
+			float Brightness = Random.Float(4, 6); // this sets the brightness
+			int red = (int)Math.Round(Random.Float(28, 31) * Brightness,0); // these will randomly asign a brown floor color to the tile.
 
 			int green = (int)Math.Round(Random.Float(13, 15) * Brightness, 0);
 
@@ -19,7 +19,7 @@ namespace Game10003
             colTileColour = new Color(red, green, blue); // this creates a random brown color
 			position = Vector2.Zero;
 		}
-		public void DrawTile()
+		public void DrawTile() // this draws the tile
 		{
 			Vector2 size = new Vector2(140, 40);
 			Draw.FillColor = colTileColour;
@@ -36,7 +36,7 @@ namespace Game10003
 			
 		}
 		public void Move(float speed)
-		{
+		{ // this just moves the tiles
 			position.X -= speed;
 		}
 	}

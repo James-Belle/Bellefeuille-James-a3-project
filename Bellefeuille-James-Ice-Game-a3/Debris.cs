@@ -9,7 +9,7 @@ namespace Game10003
 		public Vector2 debrisPosition;
 
 		Vector2 speed;
-		Vector2 size;
+		public Vector2 size;
         public float avgSize;
         float max = 20;
         public Debris()
@@ -40,7 +40,7 @@ namespace Game10003
 				speed.Y *= (float)0.95;
 			}
 			// if the debis goes out of bounds it is deleted/repurposed
-			if (debrisPosition.X < 0 || debrisPosition.Y < 0 || debrisPosition.Y > 600)
+			if (debrisPosition.X < -size.X || debrisPosition.Y < 0 || debrisPosition.Y > 600)
 			{
 				DebrisDelete();
             }
@@ -50,6 +50,7 @@ namespace Game10003
 		}
 		public bool DebrisCollide(Vector2 collisionPosition,float objectSize) // this function lags a bit, i may need to optimize. maybe call it every few frames.
 		{
+
 			//checks if mouse collides with debris
 			if (Math.Abs(debrisPosition.Y- collisionPosition.Y) < size.Y + objectSize && Math.Abs(debrisPosition.X- collisionPosition.X) < size.X + objectSize)
 			{
@@ -78,8 +79,6 @@ namespace Game10003
             debrisPosition.Y = Random.Integer(200, 400);
             size = Random.Vector2(10, max, 10, max);
             speed.X = -1;
-            //speed.X = Random.Float((float)-2, (float)-1);
-            //speed.Y = Random.Float((float)-1, (float)1);
             speed.Y = 0;
 
         }

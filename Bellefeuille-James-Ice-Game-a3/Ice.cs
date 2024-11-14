@@ -19,16 +19,15 @@ namespace Game10003
 			iceSpeed =(float) 0.01; // this system is unclear, fix nameing / how it works
 			
 		}
-		public float iceSlow(float totalSpeed)
+		public float iceSlow(float totalSpeed) // this decreases the speed and size every frame
 		{
-			totalSpeed += iceSpeed / size;
-			size -=(float) 0.001;
-
-
+			totalSpeed +=  ((float)0.05/MathF.Pow(totalSpeed, 2)) / size*2 ; // see attached desmos screenshot.
+			size -=(float) 0.002;
 			return (totalSpeed);
+			
 		}
 		
-		public void IceDraw(float speedTest, Color iceBlue)
+		public void IceDraw(float speedTest, Color iceBlue) // this drawes the ice.
 		{
 			frame++;
 			float smallSize = size/8;
@@ -57,7 +56,7 @@ namespace Game10003
                 
             }
 			else
-			{
+			{ // once the frame count is over 30 it will reset to the first frame
                 Draw.Square(position, size);
                 frame = 0;
 				Console.WriteLine(speedTest);
