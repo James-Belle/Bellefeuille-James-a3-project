@@ -11,7 +11,7 @@ namespace Game10003
 		Vector2 speed;
 		public Vector2 size;
         public float avgSize;
-        float max = 20;
+        public float max = 20;
         public Debris()
 		{
 			max = 50;
@@ -59,25 +59,25 @@ namespace Game10003
             }
 			return false;
 		}
-		public void MouseCollide(float collisionPosition)
+		public void MouseCollide(float collisionPosition, int upgrade)
 		{
             if (collisionPosition < debrisPosition.Y)
             {
                 // is the mouse is above the debris it moves it down
-                speed.Y += (float)10/(avgSize); // this bigger the debris the less it moves
+                speed.Y += (float)upgrade*4/(avgSize); // this bigger the debris the less it moves
             }
             else
             {  //if bellow it moves debris up
-                speed.Y -= (float)10/(avgSize);
+                speed.Y -= (float)upgrade*4/(avgSize);
             }
         }
 		public void DebrisDelete()
 		{
-			max++;
+			max += 4;
 			//this will reclocate the debris.
             debrisPosition.X = Random.Integer(800, 2000);
             debrisPosition.Y = Random.Integer(200, 400);
-            size = Random.Vector2(10, max, 10, max);
+            size = Random.Vector2(10+max/10, max, 10+max/10, max);
             speed.X = -1;
             speed.Y = 0;
 

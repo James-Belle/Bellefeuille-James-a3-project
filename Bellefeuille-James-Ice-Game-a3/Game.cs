@@ -31,8 +31,21 @@ namespace Game10003
         int money = 0;
         string distanceUnits = "mm";
 
-        int upgradeIceSize = 0;
+        int upgradeIceSize = 1;
+        int upgradeIceSpeed = 1;
+        int upgradeBrushSize = 1;
+        int upgradeBrushPower = 1;
         // function for hitboxes.
+        public void ReSetup()
+        {
+            distance = 0;
+            backgroundSpeed = (float)-3.0  - (upgradeIceSpeed- (float)1.0)/ (float)2.0;
+            ice.size = 19 + upgradeIceSize*2;
+            foreach (Debris deb in obstacles)
+            {
+                deb.max = 16 +upgradeIceSize + upgradeIceSpeed +upgradeBrushSize + upgradeBrushPower;
+            }
+        }
         public bool hitBoxDetect(Vector2 hitBoxPosition, Vector2 hitBoxSize, Vector2 hitboxPosition2, Vector2 hitboxSize2)
         {
             bool LeftOf;
@@ -159,7 +172,7 @@ namespace Game10003
                       if (deb.DebrisCollide(mousePosition, mouseBrush.X / 3)) // will need to be opomised later maybe
                         
                         {
-                            deb.MouseCollide(mousePosition.Y);
+                            deb.MouseCollide(mousePosition.Y, upgradeBrushPower);
                         }
                         if (deb.DebrisCollide(ice.position, ice.size)) // this will check if the brush is touching the debris
                         {
@@ -180,25 +193,38 @@ namespace Game10003
 
 
 
-                    if (ice.size < 2 || backgroundSpeed > -1 || Input.IsKeyboardKeyDown(KeyboardInput.L))//!dont forget! to comment out the debug input
+                    if (ice.size < 2 || backgroundSpeed > -1.2 || Input.IsKeyboardKeyDown(KeyboardInput.L))//!dont forget! to comment out the debug input
                     {
                         Console.WriteLine("You Lose!!");
-                        startGame = false;;
-                        money += (int)Math.Round(distance / 75.0, 0); // the money is equal to the distance /50
+                        //money += 100;//!dont forget! to comment our infinite money
+                        startGame = false;; 
+                        money += (int)Math.Round(distance / 25.0, 0); // the money is equal to the distance /50
                         
-                        if (distance < 1000)
-                        {
+                        if (distance < 264.583)
+                        { // with this the measurements are actually acurate.
+                            distance = distance * 0.264583;
                             distanceUnits = "mm";
                         }
-                        else if (distance >= 1000)
+                        else if (distance >= 264.583)
                         {
+                            distance = distance * 0.264583;
                             distance = distance / 10;
                             distanceUnits = "cm";
                         }
-                        else if (distance >= 10000)
+                        else if (distance >= 26458.3)
                         {
-                            distance = distance / 1000;
+                            distance = distance * 0.264583;
+                            distance = distance / 10;
+                            distance = distance / 100;
                             distanceUnits = "m";
+                        }
+                        else if (distance >= 26458300)
+                        {
+                            distance = distance * 0.264583;
+                            distance = distance / 10;
+                            distance = distance / 100;
+                            distance = distance / 1000;
+                            distanceUnits = "km";
                         }
                         distance = Math.Round(distance, 2);
                     }
@@ -213,7 +239,7 @@ namespace Game10003
 
 
                     Text.Draw("Distance: "+distance.ToString()+ distanceUnits, 300, 100);
-                    Text.Draw(money.ToString(), 300, 200);
+                    Text.Draw("$"+money.ToString(), 300, 200);
 
 
                     Draw.FillColor = Color.White;
@@ -221,29 +247,69 @@ namespace Game10003
 
 
                     // upgrades
-                    Text.Draw("$" + (upgradeIceSize + 1 * 100), 25, 480);
+                    Text.Draw("Ice", 160, 430);
+
+
+                    Text.Draw("Brush", 560, 430);
+
+
+                    Text.Draw("Upgrades", 350, 390);
+
+
+                    Text.Draw("$" + (upgradeIceSize* 100), 25, 480);
                     BoxMaker(25, 500, 150, 70, "Size");
 
-                    Text.Draw("$" + (upgradeIceSize + 1 * 100), 200, 480);
-                    BoxMaker(200, 500, 150, 70, "Size");
+                    Text.Draw("$" + (upgradeIceSpeed* 100), 200, 480);
+                    BoxMaker(200, 500, 150, 70, "Speed");
 
-                    Text.Draw("$" + (upgradeIceSize + 1 * 100), 425, 480);
+                    Draw.Line(400, 450, 400, 600);
+
+                    Text.Draw("$" + (upgradeBrushSize * 100), 425, 480);
                     BoxMaker(425, 500, 150, 70, "Size");
 
-                    Text.Draw("$" + (upgradeIceSize + 1 * 100), 600, 480);
-                    BoxMaker(600, 500, 150, 70, "Size");
-                    if (Input.IsMouseButtonDown(MouseInput.Left))
+                    Text.Draw("$" + (upgradeBrushPower * 100), 600, 480);
+                    BoxMaker(600, 500, 150, 70, "Power");
+                    if (Input.IsMouseButtonPressed(MouseInput.Left))
                     {
 
 
-                        if (hitBoxDetect(new Vector2(500, 200), new Vector2(150, 70), mousePosition, Vector2.Zero))
+                        if (hitBoxDetect(new Vector2(600, 100), new Vector2(150, 70), mousePosition, Vector2.Zero))
                         { // restart button
                             startGame = true;
-                            distance = 0;
+                            ReSetup();
                         }
-                        if(hitBoxDetect(new Vector2(100, 500), new Vector2(150, 70), mousePosition, Vector2.Zero))
-                        {
-
+                        else if(hitBoxDetect(new Vector2(25, 500), new Vector2(150, 70), mousePosition, Vector2.Zero))
+                        { // size
+                            if (money >= 100 * upgradeIceSize)
+                            {
+                                money -= 100 * upgradeIceSize;
+                                upgradeIceSize++;
+                            }
+                        }
+                        if (hitBoxDetect(new Vector2(200, 500), new Vector2(150, 70), mousePosition, Vector2.Zero))
+                        { // speed
+                            if (money >= 100 * upgradeIceSpeed)
+                            {
+                                money -= 100 * upgradeIceSpeed;
+                                upgradeIceSpeed++;
+                            }
+                        }
+                        if (hitBoxDetect(new Vector2(425, 500), new Vector2(150, 70), mousePosition, Vector2.Zero))
+                        { // size
+                            if (money >= 100 * upgradeBrushSize)
+                            {
+                                money -= 100 * upgradeBrushSize;
+                                upgradeBrushSize++;
+                                mouseBrush = new Vector2(50 + upgradeBrushSize*5, 10 + upgradeBrushSize);
+                            }
+                        }
+                        if (hitBoxDetect(new Vector2(600, 500), new Vector2(150, 70), mousePosition, Vector2.Zero))
+                        { // power
+                            if (money >= 100 * upgradeBrushPower)
+                            {
+                                money -= 100 * upgradeBrushPower;
+                                upgradeBrushPower++;
+                            }
                         }
 
 
