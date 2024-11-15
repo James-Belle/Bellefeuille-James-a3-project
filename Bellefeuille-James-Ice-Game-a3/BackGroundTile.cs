@@ -4,18 +4,14 @@ namespace Game10003
 {
 	public class BackGroundTile
 	{
-
 		public Vector2 position;
 		public Color colTileColour;
 		public BackGroundTile()
-		{ 
+		{
 			float Brightness = Random.Float(4, 5); // this sets the brightness
 			int red = (int)Math.Round(Random.Float(26, 27) * Brightness,0); // these will randomly asign a brown floor color to the tile.
-
 			int green = (int)Math.Round(Random.Float(11, 12) * Brightness, 0);
-
 			int blue = (int)Math.Round(Random.Float(0, 7) * Brightness / 2,0);
-
             colTileColour = new Color(red, green, blue); // this creates a random brown color
 			position = Vector2.Zero;
 		}
@@ -27,13 +23,11 @@ namespace Game10003
 		}
 
 		public void OffScreen()
-		{
+		{ //if they are offscreen it will reset their position
 			if(position.X < -140)
 			{
 				position.X += 140 * 10;
             }
-			
-			
 		}
 		public void Move(float speed)
 		{ // this just moves the tiles
