@@ -59,7 +59,6 @@ namespace Game10003
 			{ // once the frame count is over 30 it will reset to the first frame
                 Draw.Square(position, size);
                 frame = 0;
-				Console.WriteLine(speedTest);
 			}
 		}
 	}

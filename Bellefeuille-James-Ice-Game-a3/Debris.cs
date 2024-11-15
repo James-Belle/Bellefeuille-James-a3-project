@@ -11,25 +11,21 @@ namespace Game10003
 		Vector2 speed;
 		public Vector2 size;
         public float avgSize;
-        public float max = 20;
+        public float max = 23;
+		Color colDarkerGrey = new Color(50, 50, 50);
         public Debris()
 		{
 			max = 50;
             speed.X = -1;
             //speed.X = Random.Float((float)-2, (float)-1);
-            //speed.Y = Random.Float((float)-1, (float)1);
+            
             speed.Y = 0;
             debrisPosition.X = Random.Integer(600, 2000);
             debrisPosition.Y = Random.Integer(200, 400);
             size = Random.Vector2(10, max, 10, max);
-
+			
 			avgSize = size.X + size.Y / 2;
     }
-
-		public void DebrisSpawn()
-		{
-
-		}
 
 		public void DebrisMove(float speedIncrease)
 		{
@@ -44,10 +40,11 @@ namespace Game10003
 			{
 				DebrisDelete();
             }
-
-			Draw.FillColor = Color.Black;
+			Draw.FillColor = colDarkerGrey;
+			Draw.LineColor = Color.DarkGray;
 			Draw.Ellipse(debrisPosition, size);
-		}
+			
+        }
 		public bool DebrisCollide(Vector2 collisionPosition,float objectSize) // this function lags a bit, i may need to optimize. maybe call it every few frames.
 		{
 
@@ -64,22 +61,23 @@ namespace Game10003
             if (collisionPosition < debrisPosition.Y)
             {
                 // is the mouse is above the debris it moves it down
-                speed.Y += (float)upgrade*4/(avgSize); // this bigger the debris the less it moves
+                speed.Y += (1+ (float)upgrade*3)/(avgSize); // this bigger the debris the less it moves
             }
             else
             {  //if bellow it moves debris up
-                speed.Y -= (float)upgrade*4/(avgSize);
+                speed.Y -= (1+(float)upgrade*3)/(avgSize);
             }
         }
 		public void DebrisDelete()
 		{
-			max += 4;
+			max += 4; // this increases the potential size of the debris
 			//this will reclocate the debris.
             debrisPosition.X = Random.Integer(800, 2000);
             debrisPosition.Y = Random.Integer(200, 400);
             size = Random.Vector2(10+max/10, max, 10+max/10, max);
             speed.X = -1;
             speed.Y = 0;
+            avgSize = size.X + size.Y / 2;
 
         }
 	}

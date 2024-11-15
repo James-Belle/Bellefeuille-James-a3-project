@@ -1,62 +1,57 @@
-﻿// Include code libraries you need below (use the namespace).
-using Raylib_cs;
+﻿using Raylib_cs;
 using System;
 using System.Drawing;
 using System.Numerics;
 using System.Threading;
 
-// The namespace your code is in.
 namespace Game10003
 {
     /// <summary>
-    ///     Your game code goes inside this class!
+    /// 
     ///     im going to use this tag "!dont forget!" so at the end of my project i can control f to search through my project for this tag
     /// </summary>
     public class Game
     {
-        // Place your variables here:
         Vector2 mouseBrush = new Vector2(50, 10);
-        //Debris deb = new Debris(); // will probably change into an array
-        Color colBrown = new Color(180, 100, 90);
-        Ice ice = new Ice();
-        Color colUiBack = new Color(50, 20, 100);
-        Debris[] obstacles = new Debris[20];
         Vector2 mousePosition = Vector2.Zero;
+        Color colBrown = new Color(180, 100, 90);
+        Color colUiBack = new Color(50, 20, 100);
         Color colIceBlue = new Color(179, 240, 245);
+        Ice ice = new Ice();
+        Debris[] obstacles = new Debris[20];
         BackGroundTile[] backGround = new BackGroundTile[150];
         bool mainMenu = true; // in general, if main menu = true show main menu screen and nothing else.
         bool startGame = false; // otherwise if startGame = true the game screen will show, otherwise the score screen will show.
-        float backgroundSpeed = -3;
+        float backgroundSpeed = -3; // this is the speed the ice moves
         double distance = 0;
+        string distanceUnits = ""; // distance unit (mm, cm, m, km);
         int money = 0;
-        string distanceUnits = "mm";
-
         int upgradeIceSize = 1;
         int upgradeIceSpeed = 1;
         int upgradeBrushSize = 1;
         int upgradeBrushPower = 1;
-        // function for hitboxes.
+       
+
+
+
         public void ReSetup()
         {
             distance = 0;
-            backgroundSpeed = (float)-3.0  - (upgradeIceSpeed- (float)1.0)/ (float)2.0;
+            backgroundSpeed = (float)-3.0  - ((float)upgradeIceSpeed- (float)1.0)/ (float)2.0;
             ice.size = 19 + upgradeIceSize*2;
             foreach (Debris deb in obstacles)
             {
-                deb.max = 16 +upgradeIceSize + upgradeIceSpeed +upgradeBrushSize + upgradeBrushPower;
+                deb.DebrisDelete();
+                deb.max = 20;
             }
+            distanceUnits = "";
         }
+
+        // function for hitboxes.
         public bool hitBoxDetect(Vector2 hitBoxPosition, Vector2 hitBoxSize, Vector2 hitboxPosition2, Vector2 hitboxSize2)
         {
             bool LeftOf;
             bool rightOf;
-            //if (centered)
-            //{
-            //    LeftOf = hitBoxPosition.X - hitBoxSize.X  < hitboxPosition2.X - hitboxSize2.X && hitBoxPosition.X + hitBoxSize.X> hitboxPosition2.X + hitboxSize2.X;
-            //    rightOf = hitBoxPosition.Y - hitBoxSize.Y < hitboxPosition2.Y - hitboxSize2.Y && hitBoxPosition.Y + hitBoxSize.Y > hitboxPosition2.Y + hitboxSize2.Y;
-            //}
-            //else
-            //{
              LeftOf = hitBoxPosition.X < hitboxPosition2.X && hitBoxPosition.X + hitBoxSize.X > hitboxPosition2.X + hitboxSize2.X;
              rightOf = hitBoxPosition.Y < hitboxPosition2.Y && hitBoxPosition.Y + hitBoxSize.Y > hitboxPosition2.Y + hitboxSize2.Y;
             //}
@@ -67,7 +62,40 @@ namespace Game10003
             return (false);
         }
 
-
+        public double distanceCalculator(double newDist)
+        {
+            if (distance < 26.4583)
+            { // with this the measurements are actually acurate.
+                newDist = distance * 0.264583;
+                distanceUnits = "mm";
+                newDist = Math.Round(newDist, 0);
+            }
+            else if (distance <= 3779) // how many pixels are in a meter
+            {
+                newDist = distance * 0.264583;
+                newDist = newDist / 10;
+                distanceUnits = "cm";
+                newDist = Math.Round(newDist, 0);
+            }
+            else if (distance <= 3779528) //how many pixels are in a km
+            {
+                newDist = distance * 0.264583;
+                newDist = newDist / 10;
+                newDist = newDist / 100;
+                distanceUnits = "m";
+                newDist = Math.Round(newDist, 2);
+            }
+            else
+            {
+                newDist = distance * 0.264583;
+                newDist = newDist / 10;
+                newDist = newDist / 100;
+                newDist = newDist / 1000;
+                distanceUnits = "km";
+                newDist = Math.Round(newDist, 2);
+            }
+            return newDist;
+        }
         public void BoxMaker(float boxPositionX, float boxPositionY, float boxSizeX, float boxSizeY, string boxText)
         {
 
@@ -137,20 +165,22 @@ namespace Game10003
 
             else
             {
-
-
+               
                 if (startGame)
-                {
-                    // background tileing
-                    foreach (BackGroundTile tile in backGround)
+                {  // the game will start
+                    
+                    foreach (BackGroundTile tile in backGround) // background tileing
                     {
-
                         tile.DrawTile();
                         tile.OffScreen();
                         tile.Move(-backgroundSpeed);
                     }
 
-
+                    double distance2 = distanceCalculator(distance);
+                    Text.Color = Color.OffWhite;
+                    Text.Draw("$" + money.ToString(), 20, 20);
+                    Text.Draw(distance2.ToString() + distanceUnits.ToString(), 20, 60);
+                    Text.Color = Color.Black;
                     ice.IceDraw(backgroundSpeed, colIceBlue);
                     // this will draw a brush on the mouse
                     Draw.LineSize = 2;
@@ -169,20 +199,19 @@ namespace Game10003
                     // this checks the debris collisions
                     foreach (Debris deb in obstacles)
                     { // thank you forEach!!!
-                      if (deb.DebrisCollide(mousePosition, mouseBrush.X / 3)) // will need to be opomised later maybe
-                        
+                        if(deb.DebrisCollide(mousePosition, mouseBrush.X / 3))
                         {
                             deb.MouseCollide(mousePosition.Y, upgradeBrushPower);
                         }
                         if (deb.DebrisCollide(ice.position, ice.size)) // this will check if the brush is touching the debris
                         {
-                            Console.WriteLine("damage"); // !dont forget! to comment out
-                            ice.size -= (float)0.01 * deb.avgSize;
-                            backgroundSpeed += (float)0.001 * deb.avgSize;
+                            ice.size -= (float)0.012 * deb.avgSize;
+                            backgroundSpeed += (float)0.01 * deb.avgSize/ice.size;
                             deb.DebrisDelete();
 
                         }
                         deb.DebrisMove(backgroundSpeed);
+                        Draw.LineColor = Color.Black;
                     }
 
                     backgroundSpeed = ice.iceSlow(backgroundSpeed);
@@ -193,40 +222,29 @@ namespace Game10003
 
 
 
-                    if (ice.size < 2 || backgroundSpeed > -1.2 || Input.IsKeyboardKeyDown(KeyboardInput.L))//!dont forget! to comment out the debug input
+                    if (ice.size < 3 || backgroundSpeed > -1.2-0.1*upgradeIceSpeed) // this checks when the game will stop. it slowly scales with your ice speed so the game dosen't feel slow.
                     {
-                        Console.WriteLine("You Lose!!");
-                        //money += 100;//!dont forget! to comment our infinite money
                         startGame = false;; 
-                        money += (int)Math.Round(distance / 25.0, 0); // the money is equal to the distance /50
+                        money += (int)Math.Round(distance / 21.0, 0); // the money is equal to the distance /50
+                        distance = distanceCalculator(distance);
+                        if (distanceUnits == "cm")
+                        {
+                            money += (int)Math.Round(distance / 21.0, 0);
+                        }
+                        if (distanceUnits == "m")
+                        {
+                            money += 20 * (int)Math.Round(distance / 21.0, 0);
+                        }
+                        else if (distanceUnits == "km")
+                        {
+                            money += 99999;
+                            Console.WriteLine("I have no clue how youve done this but congrats!");
+                        }
+                        else
+                        {
+                            money += (int)Math.Round(distance / 21.0, 0); // the money is equal to the distance /50
+                        }
                         
-                        if (distance < 264.583)
-                        { // with this the measurements are actually acurate.
-                            distance = distance * 0.264583;
-                            distanceUnits = "mm";
-                        }
-                        else if (distance >= 264.583)
-                        {
-                            distance = distance * 0.264583;
-                            distance = distance / 10;
-                            distanceUnits = "cm";
-                        }
-                        else if (distance >= 26458.3)
-                        {
-                            distance = distance * 0.264583;
-                            distance = distance / 10;
-                            distance = distance / 100;
-                            distanceUnits = "m";
-                        }
-                        else if (distance >= 26458300)
-                        {
-                            distance = distance * 0.264583;
-                            distance = distance / 10;
-                            distance = distance / 100;
-                            distance = distance / 1000;
-                            distanceUnits = "km";
-                        }
-                        distance = Math.Round(distance, 2);
                     }
 
 
@@ -235,9 +253,6 @@ namespace Game10003
 
                 else
                 { // this will draw the scoreboard
-                    
-
-
                     Text.Draw("Distance: "+distance.ToString()+ distanceUnits, 300, 100);
                     Text.Draw("$"+money.ToString(), 300, 200);
 

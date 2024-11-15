@@ -10,7 +10,7 @@ namespace Game10003
 		public BackGroundTile()
 		{ 
 			float Brightness = Random.Float(4, 5); // this sets the brightness
-			int red = (int)Math.Round(Random.Float(26, 28) * Brightness,0); // these will randomly asign a brown floor color to the tile.
+			int red = (int)Math.Round(Random.Float(26, 27) * Brightness,0); // these will randomly asign a brown floor color to the tile.
 
 			int green = (int)Math.Round(Random.Float(11, 12) * Brightness, 0);
 
